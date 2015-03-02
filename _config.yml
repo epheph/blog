@@ -9,4 +9,4 @@ twitter_username: epheph
 github_username:  epheph
 
 # Build settings
-markdown: kramdown
+markdown: redcarpet
