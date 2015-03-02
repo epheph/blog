@@ -1,0 +1,107 @@
+---
+layout: post
+title:  "qwc - Quick estimated line counts for large files"
+date:   2014-12-12 20:28:28
+categories: cli
+---
+Line counts: a staple of command-line administration
+
+{% highlight bash %}
+$ wc -l parse_urls.py #returns immediately
+426
+
+$ wc -l /var/log/httpd/access_log #returns immediately
+18203
+
+$ wc -l 10gb.csv #Thinking, thinking, hammering your drive, spiking your load, thinking, 90s later:
+4,892,454"
+{% endhighlight %}
+
+When I am interested in the line count of a small text file (say, under 10,000), I'm often interested in the exact line count, using `wc -l` to quickly retrieve it. However, the larger the file, the more interested I am in an approximate result. In the above 10GB CSV example, I'm likely going to round up to 5M lines for documenting or estimating how long the CSV import will take, so why wait for the exact result when you're going to estimate anyway?
+
+Here is a quick bash script I whipped up, "qwc" (<b>q</b>uick <b>wc</b>). It samples lines from the top of a text file, figures out the average bytes-per-line, then divides into the total number of bytes in the file (file system metadata, full file scan not required). In this way, we can get an estimate of the number of lines in a large file without reading the entire file. If you're dealing with a fixed-width file (CSV, ascii art, whatever), the result is actually the exact line count.
+
+Use this script exactly how you would use "wc -l" (with the "-l" being an optional, ignored argument), so you can perform an action like:
+{% highlight bash %}
+[epheph@iota: /var/data] wc -l 10gb.csv
+(Taking too long, forgot to run qwc. Press Ctrl+C)
+[epheph@iota: /var/data] q!!
+qwc -l 10gb.csv
+4892454 10gb.csv
+{% endhighlight %}
+
+In this particular test, letting the original wc complete took just over 90 seconds while the qwc took just a few ms.
+
+[GitHub - epheph/qwc](https://github.com/epheph/qwc)
+
+There's not much to the script, here is it in its entirety:
+
+Script source:
+{% highlight bash %}
+
+#!/bin/sh
+
+usage()
+{
+cat << EOF
+usage: $0 options FILENAME
+
+Inspects a small subset of lines and overall file size to acheive a rough line
+count, or if all lines are the same length (fixed-width, such as CSV) an exact
+line count, without counting each individual line
+
+OPTIONS:
+   -h      Show this message
+   -s      Sample size, number of lines to inspect (default: 15)
+   -o      Offset, number of lines to ignore from beginning of file (defaut: 1)
+              (Useful for CSV headers, script hash-bangs, etc)
+   -l      No effect, useful for typing \`q!!\` after aborting a regular wc -l
+   -v      Verbose
+EOF
+}
+
+VERBOSE=0
+OFFSET=1
+SAMPLE=15
+
+while getopts "vhlo:s:" OPTION; do
+   case $OPTION in
+   h)
+      usage
+      exit 1
+      ;;
+   v)
+      VERBOSE=1 ;;
+   l)
+      # Do nothing, for q!! shortcut
+      ;;
+   o)
+      OFFSET=$OPTARG ;;
+   s)
+      SAMPLE=$OPTARG ;;
+   esac
+done
+
+shift $(($OPTIND - 1))
+SAMPLE_FILE=$1
+
+# the first line is usually different (script header, column definitions, etc)
+SAMPLE_LINE_COUNT=$( head -$(($SAMPLE + $OFFSET )) "$SAMPLE_FILE" | wc -l )
+if [ "$SAMPLE_LINE_COUNT" -lt $(( $SAMPLE + $OFFSET )) ]; then
+   # echo "$0: Not enough lines for sampling: $SAMPLE + $OFFSET"
+   # exit 1
+   # Just give them regular answer, if they're willing to sample the entire file
+   wc -l "$SAMPLE_FILE"
+   exit
+fi
+AVG_LINE_SIZE=$(( $( head -$(($SAMPLE + $OFFSET )) "$SAMPLE_FILE" | tail -$SAMPLE | wc -c ) / $SAMPLE ))
+
+TOTAL_FILE_SIZE=$( stat -c %s "$1" )
+
+if [ "$VERBOSE" -eq 1 ]; then
+   echo "Average line size: $AVG_LINE_SIZE"
+   echo "Total file size: $TOTAL_FILE_SIZE"
+fi
+
+echo $(( $TOTAL_FILE_SIZE / $AVG_LINE_SIZE )) $SAMPLE_FILE
+{% endhighlight %}
