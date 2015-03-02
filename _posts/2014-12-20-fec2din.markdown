@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "fec2din - formatted ec2 output"
+date:   2011-12-12 20:28:28
+categories: cli
+---
+After looking at this block of output one too many times, I decided enough was enough, and set out on fixing it:
+
+{% highlight bash %}
+$ ec2din
+RESERVATION	r-57192e11	103757199432	production
+INSTANCE	i-89ba1299	ami-a7f539ce	ec2-50-99-41-60.compute-1.amazonaws.com	ip-10-99-241-197.ec2.internal	running	production	0		t1.micro	2011-11-09T07:16:45+0000	us-east-1c	aki-805ea7e9			monitoring-disabled	50.99.41.60	10.99.241.197			ebs					paravirtual	xen	sg-c129fe91	default
+BLOCKDEVICE	/dev/sda1	vol-938be057	2011-11-09T07:17:07.000Z	
+BLOCKDEVICE	/dev/sdj	vol-c47fb1a9	2011-11-09T07:36:06.000Z	
+BLOCKDEVICE	/dev/sdk	vol-604da915	2011-11-09T17:18:37.000Z	
+...
+{% endhighlight %}
+
+Using a simple bash & awk script, I created a wrapper for ec2-describe-instances (ec2din) which re-formats the output in a more human-readable output...
+
+{% highlight bash %}
+$ fec2din Instance: i-57192e11
+ AMI: ami-a7f539ce
+ Type: t1.micro
+ Public IP: 50.99.41.60 (ec2-50-99-41-60.compute-1.amazonaws.com)
+ Private IP: 10.99.241.197
+ Public Key: production
+ Start Time: 2011-11-09
+ Security Group: production
+ Block Devices: /dev/sda1 /dev/sdj /dev/sdk
+{% endhighlight %}
+
+If you are interested in running fec2din or seeing more examples, please see the github page: [https://github.com/epheph/fec2din](https://github.com/epheph/fec2din)
+
