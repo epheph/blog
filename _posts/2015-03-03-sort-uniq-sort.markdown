@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "sort | uniq -c | sort -n : distilling your data"
+title:  "sort | uniq -c | sort -n : reducing your data to counts"
 date:   2015-03-03 18:12:44
 categories: cli
 ---
@@ -176,6 +176,13 @@ real	0m20.912s
 user	0m13.151s
 sys	0m5.017s
 {% endhighlight %}
+
+You might want to add this to your .bashrc:
+
+{% highlight bash %}
+alias reduce="awk '{ a[\$1]++ } END { for(i in a) print a[i], \"\\t\", i  }'"
+{% endhighlight %}
+ - Note the few extra slashes in there
 
 Conclusion
 ----------
