@@ -189,3 +189,5 @@ alias reduce="awk '{ a[\$1]++ } END { for(i in a) print a[i], \"\\t\", i  }'"
 Conclusion
 ----------
 `sort | uniq -c` is a powerful way reduce a line-delimitted list of items into a count of each item's appearance. Appending `sort -n` orders the counts numerically, helping to identify the highest or lowest frequencies in any list. `grep -o` can be a powerful way to extract the data you need before passing it into `sort | uniq -c`. When dealing with large quanities of items, a native `awk` solution is often faster, as the initial `sort` in this pattern is not truly necessary.
+
+See [Part 2 - Hadoop Streaming]({% post_url 2015-03-07-map-reduce-2-streaming %}
