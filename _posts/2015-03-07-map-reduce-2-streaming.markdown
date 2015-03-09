@@ -110,6 +110,7 @@ print( "%s\t%s" % (current_key, current_count ) )
 Performance
 -----------
 Alright, let's try the many versions now!
+TODO: Add results here (they are still running for some of the slower ones!)
 
 Conclusion
 ----------
@@ -121,4 +122,4 @@ In our next entry, we'll take what we've written here and leverage Hadoop HDFS a
 
 References
 ----------
- - (Apache Hadoop Streaming Docs)[http://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/HadoopStreaming.html]
+ - [Apache Hadoop Streaming Docs](http://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/HadoopStreaming.html)
