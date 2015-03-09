@@ -1,9 +1,11 @@
 ---
 layout: post
-title:  "sort | uniq -c | sort -n : reducing your data to counts"
+title:  "Leveraging MapReduce for log files part 1: sort | uniq -c | sort -n"
 date:   2015-03-03 18:12:44
 categories: cli
 ---
+Before delving into how one can use Hadoop MapReduce to parse large log files, let's start with a simple intent and a simple solution that quickly and easily suits smaller files, perhaps under 100GB or so, without using Hadoop at all. In fact, these tools have been around since the dawn of time (Thu Jan  1 00:00:00 UTC 1970). In fact, what we are doing below is actually "mapping" (`grep -o`) and "reducing" (`uniq -c`), just not "MapReduce"ing, so it is important to understand these concepts before proceeding to [part 2].
+
 One of the more powerful command-line patterns, and one that I find myself using daily:
 
 {% highlight bash %}
