@@ -109,8 +109,59 @@ print( "%s\t%s" % (current_key, current_count ) )
 
 Performance
 -----------
-Alright, let's try the many versions now!
-TODO: Add results here (they are still running for some of the slower ones!)
+Alright, let's try the 3 versions we've discussed! The sample file here is 15GB, about 40M lines.
+
+The quick, composable method takes nearly 6 minutes:
+{% highlight bash %}
+$ echo 3 | sudo tee /proc/sys/vm/drop_caches
+3
+$ time sh -c "cat haproxy.log | awk '{ print \$8 }' | sort | uniq -c | sort -n"
+     13 p-api
+     15 o-api
+     26 n-api
+     28 m-api
+     32 l-api
+     81 k-api
+    107 j-api
+    619 i-api
+  12369 h-api
+  43232 g-api
+ 516429 f-api
+ 859684 e-api
+1401141 d-api
+2861855 c-api
+8132881 b-api
+25676248 a-api
+
+real	5m48.342s
+user	3m27.613s
+sys	0m47.970s
+{% endhighlight %}
+
+Using only awk, counting results using a dictionary without sorting, uses a bit less wall time and significantly less cpu time:
+{% highlight bash %}
+$ echo 3 | sudo tee /proc/sys/vm/drop_caches
+3
+$ time sh -c "cat haproxy.log | awk '{ a[\$8]++ } END { for(i in a) print a[i], "\t", i  }'" | wc -l
+16
+
+real	3m44.018s
+user	1m12.593s
+sys	0m41.154s
+{% endhighlight %}
+
+
+The MapReduce method is notably less efficient, as expected, but will set us up for massive parallelization, which we'll explore in the upcoming part 3:
+{% highlight bash %}
+$ echo 3 | sudo tee /proc/sys/vm/drop_caches
+3
+$ time sh -c "cat haproxy.log  | python mapper.py | sort | python reducer.py" | wc -l
+16
+
+real	6m30.955s
+user	5m32.471s
+sys	0m34.978s
+{% endhighlight %}
 
 Conclusion
 ----------
