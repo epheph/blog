@@ -8,13 +8,13 @@ There are a plethora of really basic (Linux) systems-oriented questions floating
 
 1.) Subnet Mask: 255.255.255.1
 ------------------------------
-Under the assumtion it is valid (*technically*, [it is](https://tools.ietf.org/html/rfc1219)), how many hosts would be in a subnet with this network mask? What would the network number and broadcast be? What would be unusual about the host numbering? How would you represent it with CIDR?
+Under the assumption it is valid (*technically*, [it is](https://tools.ietf.org/html/rfc1219)), how many hosts would be in a subnet with this network mask? What would the network number and broadcast be? What would be unusual about the host numbering? How would you represent it with CIDR?
 
-255.255.255.1 is quite an odd subnet mask, with a bitmask of:
+255.255.255.1 is quite an odd subnet mask, with a bit-mask of:
 
 11111111 11111111 11111111 00000001
 
-Remembering that the network is the part that matches all the '1's (and in this case, the 1's are non-contiguous), let's try a few out. Below are a few samples starting from 8.8.8.0, bolding the host portions of the netmask applied each IP:
+Remembering that the network is the part that matches all the '1's (and in this case, the 1's are non-contiguous), let's try a few out. Below are a few samples starting from 8.8.8.0, host portions of the netmask applied each IP in bold:
 
 8.8.8.0 - 00001000 00001000 00001000 **0000000**0<br />
 8.8.8.1 - 00001000 00001000 00001000 **0000000**1<br />
@@ -69,7 +69,7 @@ time is a shell keyword
 time is /usr/bin/time
 {% endhighlight %}
 
-This question not only shows a good working set and exposure to basic unix tools (and each answer could be an interesting discussion), but also which ones are core to Linux in addition to the difference between builtins and executables.
+This question not only shows a good working set and exposure to basic Unix tools (and each answer could be an interesting discussion), but also which ones are core to Linux in addition to the difference between builtins and executables.
 
 3.) How do you find file creation time in Linux?
 ------------------------------------------------
@@ -87,7 +87,7 @@ A great answer would be something along the lines of: "if you knew it was the la
 4.) Your Linux system is not experiencing a performance issue, but `free` reports very little memory free. Why?
 ---------------------------------------------------------------------------------------------------------------
 
-This one is a little vague, and i would work with the candidate to make sure they understood what is being asked, but anyone interviewing at mid-level or greater position should have run into what seems like a low memory issue in on a Linux box, but isn't. The answer i'm looking for here is "cached" memory. Let's look at a standard `free` output:
+This one is a little vague, and i would work with the candidate to make sure they understood what is being asked, but anyone interviewing at mid-level or greater position should have run into what seems like a low memory issue in on a Linux box, but isn't. The answer I'm looking for here is "cached" memory. Let's look at a standard `free` output:
 
 {% highlight bash %}
 $ free -m | head -2
@@ -104,7 +104,7 @@ Mem:         96695      94316       2379          0          0      71689
 -/+ buffers/cache:      22612      74083
 {% endhighlight %}
 
-`free` is nice enough to calculate the ACTUAL used and free in the "-/+ buffers/cache" line of the output, which is the most important line in `free`'s output.  If you'd like to play around with thi cache, the kernel provides a method to request a cache drop:
+`free` is nice enough to calculate the ACTUAL used and free in the "-/+ buffers/cache" line of the output, which is the most important line in `free`'s output.  If you'd like to play around with this cache, the kernel provides a method to request a cache drop:
 
 {% highlight bash %}
 $  echo 3 | sudo tee /proc/sys/vm/drop_caches
